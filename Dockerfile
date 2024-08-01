@@ -1,11 +1,14 @@
 FROM ubuntu:latest
 
-RUN apt-get update && apt install golang -y
+WORKDIR /app
 
-ENV GO111MODULE=off
+COPY Django /app
+COPY requirements.txt /app
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
+RUN apt-get update && \
+	apt-get install -y python3 python3-pip  && \
+		pip install -r requirements.txt
 
-COPY . .
+ENTRYPOINT ["python3"]
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 
-RUN CGO_ENABLED=0 go build -o /app .
-
-ENTRYPOINT ["/app"]
